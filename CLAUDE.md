@@ -187,6 +187,7 @@ kiosco-app/
 8. **Cuando algo del Excel no calce con este doc**, paráte y consultá. NO improvisar parseo.
 9. **Errores de Python**: explicáselos al usuario en castellano simple antes de proponer el fix.
 10. **Tests automáticos**: no escribir en v0. Validar a ojo con datos reales.
+11. **`layout="wide"`** se aplica con `st.set_page_config(layout="wide")` en cada página, NO en `config.toml` (esa key no existe a nivel global en Streamlit moderno).
 
 ## Orden de implementación sugerido
 
