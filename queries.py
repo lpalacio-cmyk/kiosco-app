@@ -1,7 +1,7 @@
 """Queries de agregación read-only sobre el modelo."""
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
@@ -24,6 +24,25 @@ _UTC = ZoneInfo("UTC")
 def _to_local_date(utc_naive: datetime) -> date:
     """Convierte un datetime UTC naive al date local de Catamarca."""
     return utc_naive.replace(tzinfo=_UTC).astimezone(ZoneInfo(TIMEZONE_DISPLAY)).date()
+
+
+def today_range_utc() -> tuple[datetime, datetime]:
+    """Rango [start, end) en UTC naive que corresponde a 'hoy' local Catamarca."""
+    tz = ZoneInfo(TIMEZONE_DISPLAY)
+    today_local = datetime.now(tz).date()
+    start_local = datetime.combine(today_local, time.min, tzinfo=tz)
+    end_local = start_local + timedelta(days=1)
+    return (
+        start_local.astimezone(_UTC).replace(tzinfo=None),
+        end_local.astimezone(_UTC).replace(tzinfo=None),
+    )
+
+
+def formatear_pesos(valor: Decimal) -> str:
+    """Formato argentino: $1.234,56 (punto miles, coma decimales)."""
+    crudo = f"{valor:,.2f}"
+    swapped = crudo.replace(",", "·").replace(".", ",").replace("·", ".")
+    return f"${swapped}"
 
 
 def get_product_by_code(session: Session, code: str) -> Product | None:
