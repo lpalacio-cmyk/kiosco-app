@@ -28,10 +28,24 @@ def _to_local_date(utc_naive: datetime) -> date:
 
 def today_range_utc() -> tuple[datetime, datetime]:
     """Rango [start, end) en UTC naive que corresponde a 'hoy' local Catamarca."""
+    today_local = datetime.now(ZoneInfo(TIMEZONE_DISPLAY)).date()
+    return range_utc_from_local_dates(today_local, today_local)
+
+
+def range_utc_from_local_dates(
+    start_local_date: date,
+    end_local_date: date,
+) -> tuple[datetime, datetime]:
+    """Rango [start, end) en UTC naive desde dates locales Catamarca.
+
+    end_local_date es INCLUSIVE (incluye todo ese día). El UTC devuelto es
+    semi-abierto: end = primer instante del día siguiente a end_local_date.
+    """
     tz = ZoneInfo(TIMEZONE_DISPLAY)
-    today_local = datetime.now(tz).date()
-    start_local = datetime.combine(today_local, time.min, tzinfo=tz)
-    end_local = start_local + timedelta(days=1)
+    start_local = datetime.combine(start_local_date, time.min, tzinfo=tz)
+    end_local = datetime.combine(
+        end_local_date + timedelta(days=1), time.min, tzinfo=tz
+    )
     return (
         start_local.astimezone(_UTC).replace(tzinfo=None),
         end_local.astimezone(_UTC).replace(tzinfo=None),
