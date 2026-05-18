@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
@@ -29,12 +29,6 @@ REQUIRED_COLUMNS = (
 )
 SHEET_NAME = "Catálogo Export"
 STOCK_REASON_INITIAL = "Carga inicial desde Excel"
-
-
-def utc_naive_now() -> datetime:
-    # BD guarda UTC naive (decisión 10). datetime.now(timezone.utc) evita el
-    # utcnow() deprecado y deja claro que es UTC, no hora local.
-    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 def parse_args() -> argparse.Namespace:
@@ -216,6 +210,7 @@ def main() -> None:
 
     # Imports después de setear DB_URL para que db.py lo resuelva correctamente.
     from db import SessionLocal, get_engine, init_db
+    from queries import utc_naive_now
 
     excel_path = Path(args.excel)
     df = load_excel(excel_path)

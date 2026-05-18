@@ -37,7 +37,7 @@ start_utc, end_utc = queries.today_range_utc()
 with get_session() as s:
     kpis = queries.kpis_periodo(s, start_utc, end_utc)
     metodos = queries.ventas_por_metodo(s, start_utc, end_utc)
-    ultimas = queries.ultimas_ventas(s, limit=5)
+    ultimas = queries.ultimas_ventas(s, limit=5, start_utc=start_utc, end_utc=end_utc)
 
 st.title("Kiosco — Hoy")
 

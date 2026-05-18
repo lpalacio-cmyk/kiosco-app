@@ -1,7 +1,7 @@
-"""Queries de agregación read-only sobre el modelo."""
+"""Queries de agregación read-only sobre el modelo + helpers de tiempo y formato."""
 from __future__ import annotations
 
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
@@ -43,6 +43,20 @@ def formatear_pesos(valor: Decimal) -> str:
     crudo = f"{valor:,.2f}"
     swapped = crudo.replace(",", "·").replace(".", ",").replace("·", ".")
     return f"${swapped}"
+
+
+def utc_naive_now() -> datetime:
+    """Ahora en UTC naive (BD guarda UTC sin tzinfo, decisión 10)."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def listar_productos_activos(session: Session) -> list[Product]:
+    """Todos los productos con active=True, ordenados por name."""
+    return list(
+        session.scalars(
+            select(Product).where(Product.active.is_(True)).order_by(Product.name)
+        )
+    )
 
 
 def get_product_by_code(session: Session, code: str) -> Product | None:
@@ -166,16 +180,20 @@ def ventas_por_metodo(
     return {m: found.get(m, Decimal("0")) for m in PAYMENT_METHODS_DB}
 
 
-def ultimas_ventas(session: Session, limit: int = 5) -> list[Sale]:
-    """Últimas N ventas con product eager-loaded."""
-    return list(
-        session.scalars(
-            select(Sale)
-            .options(selectinload(Sale.product))
-            .order_by(Sale.sold_at.desc())
-            .limit(limit)
-        )
-    )
+def ultimas_ventas(
+    session: Session,
+    limit: int = 5,
+    start_utc: datetime | None = None,
+    end_utc: datetime | None = None,
+) -> list[Sale]:
+    """Últimas N ventas con product eager-loaded; filtra por rango si se pasa."""
+    stmt = select(Sale).options(selectinload(Sale.product))
+    if start_utc is not None:
+        stmt = stmt.where(Sale.sold_at >= start_utc)
+    if end_utc is not None:
+        stmt = stmt.where(Sale.sold_at < end_utc)
+    stmt = stmt.order_by(Sale.sold_at.desc()).limit(limit)
+    return list(session.scalars(stmt))
 
 
 def serie_diaria(
