@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Base de datos local
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Excel del cliente (datos sensibles del kiosco)
+data/raw/*.xlsx
+data/raw/*.xls
+
+# IDE / SO
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
