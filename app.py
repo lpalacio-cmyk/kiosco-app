@@ -51,7 +51,7 @@ col4.metric("Efectivo", queries.formatear_pesos(metodos["efectivo"]))
 col5.metric("Transferencia", queries.formatear_pesos(metodos["transferencia"]))
 col6.metric("Fiado", queries.formatear_pesos(metodos["fiado"]))
 
-if st.button("➕ Nueva Venta", type="primary", use_container_width=True):
+if st.button("➕ Nueva Venta", type="primary", width="stretch"):
     st.switch_page("pages/1_Cargar_Venta.py")
 
 st.subheader("Últimas ventas")
@@ -70,4 +70,4 @@ else:
             for v in ultimas
         ]
     )
-    st.dataframe(df, hide_index=True, use_container_width=True)
+    st.dataframe(df, hide_index=True, width="stretch")

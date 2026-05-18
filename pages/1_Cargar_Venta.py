@@ -100,7 +100,7 @@ with st.form("venta_form", clear_on_submit=True):
     submit = st.form_submit_button(
         "💾 Guardar Venta",
         type="primary",
-        use_container_width=True,
+        width="stretch",
     )
 
 
@@ -179,4 +179,4 @@ else:
             for v in ultimas
         ]
     )
-    st.dataframe(df, hide_index=True, use_container_width=True)
+    st.dataframe(df, hide_index=True, width="stretch")
