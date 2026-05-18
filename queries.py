@@ -73,6 +73,21 @@ def listar_productos_activos(session: Session) -> list[Product]:
     )
 
 
+def listar_productos(
+    session: Session,
+    solo_activos: bool = True,
+) -> list[Product]:
+    """Productos con category eager-loaded; opcionalmente incluye inactivos."""
+    stmt = (
+        select(Product)
+        .options(selectinload(Product.category))
+        .order_by(Product.name)
+    )
+    if solo_activos:
+        stmt = stmt.where(Product.active.is_(True))
+    return list(session.scalars(stmt))
+
+
 def get_product_by_code(session: Session, code: str) -> Product | None:
     """Resuelve un código exacto a un Product, o None si no existe."""
     return session.scalar(select(Product).where(Product.code == code))
